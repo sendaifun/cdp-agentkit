@@ -41,6 +41,12 @@
   "dependencies": {
     "@coinbase/coinbase-sdk": "^0.17.0",
     "@jup-ag/api": "^6.0.39",
+    "@metaplex-foundation/digital-asset-standard-api": "^1.0.5",
+    "@metaplex-foundation/mpl-core": "^1.2.0",
+    "@metaplex-foundation/umi": "^1.0.0",
+    "@metaplex-foundation/umi-bundle-defaults": "^1.0.0",
+    "@metaplex-foundation/umi-signer-wallet-adapters": "^1.0.0",
+    "@metaplex-foundation/umi-web3js-adapters": "^1.0.0",
     "@privy-io/server-auth": "^1.18.4",
     "@solana/spl-token": "^0.4.12",
     "@solana/web3.js": "^1.98.0",
