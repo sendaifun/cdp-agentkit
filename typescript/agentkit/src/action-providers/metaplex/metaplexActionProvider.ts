@@ -1,0 +1,178 @@
+import { ActionProvider } from "../actionProvider";
+import { Network } from "../../network";
+import { SvmWalletProvider } from "../../wallet-providers";
+import z from "zod";
+import { CreateAction } from "../actionDecorator";
+import { PublicKey, VersionedTransaction } from "@solana/web3.js";
+import {
+  DeployCollectionSchema,
+  DeployTokenSchema,
+  GetAssetSchema,
+  GetAssetsByAuthoritySchema,
+  GetAssetsByCreatorSchema,
+  MintNFTSchema,
+  SearchAssetsSchema,
+} from "./schemas";
+
+const SAK = import("solana-agent-kit");
+const NFTPlugin = import("@solana-agent-kit/plugin-nft");
+
+/**
+ * MetaplexActionProvider handles token and NFT creation using Metaplex.
+ */
+export class MetaplexActionProvider extends ActionProvider<SvmWalletProvider> {
+  /**
+   * Initializes Metaplex
+   */
+  constructor() {
+    super("metaplex", []);
+  }
+
+  /**
+   * Checks if the action provider supports the given network.
+   * Only supports Solana networks.
+   *
+   * @param network - The network to check support for
+   * @returns True if the network is a Solana network
+   */
+  supportsNetwork(network: Network): boolean {
+    return network.protocolFamily == "svm" && network.networkId === "solana-mainnet";
+  }
+
+  @CreateAction({
+    name: "deploy_token",
+    description: `
+    Deploys a new SPL token using Metaplex.
+    - Name, URI, and symbol are required.
+    - Decimals default to 9.
+    - All authorities default to the wallet's public key. (e.g mintAuthority, freezeAuthority, updateAuthority)`,
+    schema: DeployTokenSchema,
+  })
+  async deployToken(
+    walletProvider: SvmWalletProvider,
+    args: z.infer<typeof DeployTokenSchema>,
+  ): Promise<string> {
+    try {
+      const { SolanaAgentKit } = await SAK;
+      SolanaAgentKit;
+      const mintAddress = "";
+      return `Successfully deployed token with name: ${args.name}, symbol: ${args.symbol}, mint: ${mintAddress}, and URI: ${args.uri}`;
+    } catch (e) {
+      return `Error deploying token: ${e}`;
+    }
+  }
+
+  @CreateAction({
+    name: "deploy_collection",
+    description: `
+    Deploy a new NFT collection on the Solana blockchain using Metaplex.
+    - Name and URI are required.`,
+    schema: DeployCollectionSchema,
+  })
+  async deployCollection(
+    walletProvider: SvmWalletProvider,
+    args: z.infer<typeof DeployCollectionSchema>,
+  ): Promise<string> {
+    try {
+      const collectionAddress = "";
+      return `Successfully deployed collection with name: ${args.name}, collection address: ${collectionAddress}, and URI: ${args.uri}`;
+    } catch (e) {
+      return `Error deploying collection: ${e}`;
+    }
+  }
+
+  @CreateAction({
+    name: "get_asset",
+    description: `
+    Fetch asset details using the Metaplex DAS API.
+    - Asset ID is required.`,
+    schema: GetAssetSchema,
+  })
+  async getAsset(
+    walletProvider: SvmWalletProvider,
+    args: z.infer<typeof GetAssetSchema>,
+  ): Promise<string> {
+    try {
+      const assetDetails = "";
+      return `Here are the asset details for asset ID: ${args.assetId}, ${assetDetails}`;
+    } catch (e) {
+      return `Error getting asset: ${e}`;
+    }
+  }
+
+  @CreateAction({
+    name: "get_assets_by_authority",
+    description: `
+    Fetch a list of assets owned by a specific address using the Metaplex DAS API.
+    - Authority address is required.`,
+    schema: GetAssetsByAuthoritySchema,
+  })
+  async getAssetsByAuthority(
+    walletProvider: SvmWalletProvider,
+    args: z.infer<typeof GetAssetsByAuthoritySchema>,
+  ): Promise<string> {
+    try {
+      const assets = "";
+      return `Here are the assets owned by authority address: ${args.authority}, ${assets}`;
+    } catch (e) {
+      return `Error getting assets: ${e}`;
+    }
+  }
+
+  @CreateAction({
+    name: "get_assets_by_creator",
+    description: `
+    Fetch a list of assets created by a specific address using the Metaplex DAS API.
+    - Creator address is required.`,
+    schema: GetAssetsByCreatorSchema,
+  })
+  async getAssetsByCreator(
+    walletProvider: SvmWalletProvider,
+    args: z.infer<typeof GetAssetsByCreatorSchema>,
+  ): Promise<string> {
+    try {
+      const assets = "";
+      return `Here are the assets created by creator address: ${args.creator}, ${assets}`;
+    } catch (e) {
+      return `Error getting assets: ${e}`;
+    }
+  }
+
+  @CreateAction({
+    name: "mint_nft",
+    description: `
+    Mint an NFT using Metaplex.
+    - Collection address, metadata URI, and token metadata are required.`,
+    schema: MintNFTSchema,
+  })
+  async mintNFT(
+    walletProvider: SvmWalletProvider,
+    args: z.infer<typeof MintNFTSchema>,
+  ): Promise<string> {
+    try {
+      const nftAddress = "";
+      return `Successfully minted NFT with address: ${nftAddress}`;
+    } catch (e) {
+      return `Error minting NFT: ${e}`;
+    }
+  }
+
+  @CreateAction({
+    name: "search_assets",
+    description: `
+    Search for assets using the Metaplex DAS API.
+    - All parameters are optional, however at least one is needed for search.`,
+    schema: SearchAssetsSchema,
+  })
+  async searchAssets(
+    walletProvider: SvmWalletProvider,
+    args: z.infer<typeof SearchAssetsSchema>,
+  ): Promise<string> {
+    try {
+      const asset = "";
+      return `Found asset: ${asset}`;
+    } catch (e) {
+      return `Error searching for assets: ${e}`;
+    }
+  }
+}
