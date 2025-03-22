@@ -30,7 +30,7 @@ export const DeployCollectionSchema = z.object({
     .array(
       z.object({
         address: z.string().min(1, "Creator address is required"),
-        percentage: z.number().min(0).max(100).optional(),
+        percentage: z.number().min(0).max(100),
       }),
     )
     .optional(),

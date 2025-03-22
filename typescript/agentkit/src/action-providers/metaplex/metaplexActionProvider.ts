@@ -12,9 +12,12 @@ import {
   MintNFTSchema,
   SearchAssetsSchema,
 } from "./schemas";
+import { SolanaAgentKit } from "solana-agent-kit";
+import NFTPlugin from "@solana-agent-kit/plugin-nft";
+import { PublicKey, VersionedTransaction } from "@solana/web3.js";
 
-const SAK = import("solana-agent-kit");
-const NFTPlugin = import("@solana-agent-kit/plugin-nft");
+// const SAK = import("solana-agent-kit");
+// const NFTPlugin = import("@solana-agent-kit/plugin-nft");
 
 /**
  * MetaplexActionProvider handles token and NFT creation using Metaplex.
@@ -28,16 +31,12 @@ export class MetaplexActionProvider extends ActionProvider<SvmWalletProvider> {
   }
 
   /**
-   * Checks if the action provider supports the given network.
-   * Only supports Solana networks.
+   * Deploys a new SPL token using Metaplex.
    *
-   * @param network - The network to check support for
-   * @returns True if the network is a Solana network
+   * @param walletProvider - The wallet provider to use for signing transactions
+   * @param args - The arguments for deploying the token
+   * @returns A message indicating success or failure
    */
-  supportsNetwork(network: Network): boolean {
-    return network.protocolFamily == "svm" && network.networkId === "solana-mainnet";
-  }
-
   @CreateAction({
     name: "deploy_token",
     description: `
@@ -52,26 +51,54 @@ export class MetaplexActionProvider extends ActionProvider<SvmWalletProvider> {
     args: z.infer<typeof DeployTokenSchema>,
   ): Promise<string> {
     try {
-      const { SolanaAgentKit } = await SAK;
-      const nftPlugin = await NFTPlugin;
+      // const { SolanaAgentKit } = await SAK;
+      // const NFTPlugin = await NFTPlugin;
       const sakInstance = new SolanaAgentKit(
         {
           ...walletProvider,
+          publicKey: walletProvider.getPublicKey(),
           sendTransaction: async transaction => {
-            return await walletProvider.signAndSendTransaction(transaction);
+            return await walletProvider.signAndSendTransaction(transaction as VersionedTransaction);
+          },
+          signTransaction: async transaction => {
+            return (await walletProvider.signTransaction(
+              transaction as VersionedTransaction,
+            )) as any;
+          },
+          signAllTransactions: async transactions => {
+            const signedTransactions: VersionedTransaction[] = [];
+            for (let i = 0; i < transactions.length; i++) {
+              signedTransactions[i] = await walletProvider.signTransaction(
+                transactions[i] as VersionedTransaction,
+              );
+            }
+            return signedTransactions as any;
           },
         },
         walletProvider.getConnection().rpcEndpoint,
-      ).use(nftPlugin);
+        {},
+      ).use(NFTPlugin);
       const res = await sakInstance.methods.deployToken(
         sakInstance,
         args.name,
         args.uri,
         args.symbol,
-        args.authority,
+        {
+          isMutable: args.authority?.isMutable,
+          mintAuthority: args.authority?.mintAuthority
+            ? new PublicKey(args.authority.mintAuthority)
+            : null,
+          freezeAuthority: args.authority?.freezeAuthority
+            ? new PublicKey(args.authority.freezeAuthority)
+            : null,
+          updateAuthority: args.authority?.updateAuthority
+            ? new PublicKey(args.authority.updateAuthority)
+            : null,
+        },
         args.decimals,
         args.initialSupply,
       );
+      // @ts-expect-error - mint is a PublicKey
       const mintAddress = res.mint.toBase58();
       return `Successfully deployed token with name: ${args.name}, symbol: ${args.symbol}, mint: ${mintAddress}, and URI: ${args.uri}`;
     } catch (e) {
@@ -91,17 +118,33 @@ export class MetaplexActionProvider extends ActionProvider<SvmWalletProvider> {
     args: z.infer<typeof DeployCollectionSchema>,
   ): Promise<string> {
     try {
-      const { SolanaAgentKit } = await SAK;
-      const nftPlugin = await NFTPlugin;
+      // const { SolanaAgentKit } = await SAK;
+      // const NFTPlugin = await NFTPlugin;
       const sakInstance = new SolanaAgentKit(
         {
           ...walletProvider,
+          publicKey: walletProvider.getPublicKey(),
           sendTransaction: async transaction => {
-            return await walletProvider.signAndSendTransaction(transaction);
+            return await walletProvider.signAndSendTransaction(transaction as VersionedTransaction);
+          },
+          signTransaction: async transaction => {
+            return (await walletProvider.signTransaction(
+              transaction as VersionedTransaction,
+            )) as any;
+          },
+          signAllTransactions: async transactions => {
+            const signedTransactions: VersionedTransaction[] = [];
+            for (let i = 0; i < transactions.length; i++) {
+              signedTransactions[i] = await walletProvider.signTransaction(
+                transactions[i] as VersionedTransaction,
+              );
+            }
+            return signedTransactions as any;
           },
         },
         walletProvider.getConnection().rpcEndpoint,
-      ).use(nftPlugin);
+        {},
+      ).use(NFTPlugin);
       const res = await sakInstance.methods.deployCollection(sakInstance, {
         name: args.name,
         uri: args.uri,
@@ -127,17 +170,33 @@ export class MetaplexActionProvider extends ActionProvider<SvmWalletProvider> {
     args: z.infer<typeof GetAssetSchema>,
   ): Promise<string> {
     try {
-      const { SolanaAgentKit } = await SAK;
-      const nftPlugin = await NFTPlugin;
+      // const { SolanaAgentKit } = await SAK;
+      // const NFTPlugin = await NFTPlugin;
       const sakInstance = new SolanaAgentKit(
         {
           ...walletProvider,
+          publicKey: walletProvider.getPublicKey(),
           sendTransaction: async transaction => {
-            return await walletProvider.signAndSendTransaction(transaction);
+            return await walletProvider.signAndSendTransaction(transaction as VersionedTransaction);
+          },
+          signTransaction: async transaction => {
+            return (await walletProvider.signTransaction(
+              transaction as VersionedTransaction,
+            )) as any;
+          },
+          signAllTransactions: async transactions => {
+            const signedTransactions: VersionedTransaction[] = [];
+            for (let i = 0; i < transactions.length; i++) {
+              signedTransactions[i] = await walletProvider.signTransaction(
+                transactions[i] as VersionedTransaction,
+              );
+            }
+            return signedTransactions as any;
           },
         },
         walletProvider.getConnection().rpcEndpoint,
-      ).use(nftPlugin);
+        {},
+      ).use(NFTPlugin);
       const res = await sakInstance.methods.getAsset(sakInstance, args.assetId);
       const assetDetails = JSON.stringify(res, null, 2);
       return `Here are the asset details for asset ID: ${args.assetId}, ${assetDetails}`;
@@ -158,18 +217,38 @@ export class MetaplexActionProvider extends ActionProvider<SvmWalletProvider> {
     args: z.infer<typeof GetAssetsByAuthoritySchema>,
   ): Promise<string> {
     try {
-      const { SolanaAgentKit } = await SAK;
-      const nftPlugin = await NFTPlugin;
+      // const { SolanaAgentKit } = await SAK;
+      // const NFTPlugin = await NFTPlugin;
       const sakInstance = new SolanaAgentKit(
         {
           ...walletProvider,
+          publicKey: walletProvider.getPublicKey(),
           sendTransaction: async transaction => {
-            return await walletProvider.signAndSendTransaction(transaction);
+            return await walletProvider.signAndSendTransaction(transaction as VersionedTransaction);
+          },
+          signTransaction: async transaction => {
+            return (await walletProvider.signTransaction(
+              transaction as VersionedTransaction,
+            )) as any;
+          },
+          signAllTransactions: async transactions => {
+            const signedTransactions: VersionedTransaction[] = [];
+            for (let i = 0; i < transactions.length; i++) {
+              signedTransactions[i] = await walletProvider.signTransaction(
+                transactions[i] as VersionedTransaction,
+              );
+            }
+            return signedTransactions as any;
           },
         },
         walletProvider.getConnection().rpcEndpoint,
-      ).use(nftPlugin);
-      const res = await sakInstance.methods.getAssetsByAuthority(sakInstance, args);
+        {},
+      ).use(NFTPlugin);
+      const res = await sakInstance.methods.getAssetsByAuthority(sakInstance, {
+        ...args,
+        // @ts-expect-error - authority is a PublicKey
+        authority: new PublicKey(args.authority),
+      });
       const assets = JSON.stringify(res, null, 2);
       return `Here are the assets owned by authority address: ${args.authority}, ${assets}`;
     } catch (e) {
@@ -189,18 +268,38 @@ export class MetaplexActionProvider extends ActionProvider<SvmWalletProvider> {
     args: z.infer<typeof GetAssetsByCreatorSchema>,
   ): Promise<string> {
     try {
-      const { SolanaAgentKit } = await SAK;
-      const nftPlugin = await NFTPlugin;
+      // const { SolanaAgentKit } = await SAK;
+      // const NFTPlugin = await NFTPlugin;
       const sakInstance = new SolanaAgentKit(
         {
           ...walletProvider,
+          publicKey: walletProvider.getPublicKey(),
           sendTransaction: async transaction => {
-            return await walletProvider.signAndSendTransaction(transaction);
+            return await walletProvider.signAndSendTransaction(transaction as VersionedTransaction);
+          },
+          signTransaction: async transaction => {
+            return (await walletProvider.signTransaction(
+              transaction as VersionedTransaction,
+            )) as any;
+          },
+          signAllTransactions: async transactions => {
+            const signedTransactions: VersionedTransaction[] = [];
+            for (let i = 0; i < transactions.length; i++) {
+              signedTransactions[i] = await walletProvider.signTransaction(
+                transactions[i] as VersionedTransaction,
+              );
+            }
+            return signedTransactions as any;
           },
         },
         walletProvider.getConnection().rpcEndpoint,
-      ).use(nftPlugin);
-      const res = await sakInstance.methods.getAssetsByCreator(sakInstance, args);
+        {},
+      ).use(NFTPlugin);
+      const res = await sakInstance.methods.getAssetsByCreator(sakInstance, {
+        ...args,
+        // @ts-expect-error - unnecessary type mismatch
+        creator: new PublicKey(args.creator),
+      });
       const assets = JSON.stringify(res, null, 2);
       return `Here are the assets created by creator address: ${args.creator}, ${assets}`;
     } catch (e) {
@@ -220,21 +319,41 @@ export class MetaplexActionProvider extends ActionProvider<SvmWalletProvider> {
     args: z.infer<typeof MintNFTSchema>,
   ): Promise<string> {
     try {
-      const { SolanaAgentKit } = await SAK;
-      const nftPlugin = await NFTPlugin;
+      // const { SolanaAgentKit } = await SAK;
+      // const NFTPlugin = await NFTPlugin;
       const sakInstance = new SolanaAgentKit(
         {
           ...walletProvider,
+          publicKey: walletProvider.getPublicKey(),
           sendTransaction: async transaction => {
-            return await walletProvider.signAndSendTransaction(transaction);
+            return await walletProvider.signAndSendTransaction(transaction as VersionedTransaction);
+          },
+          signTransaction: async transaction => {
+            return (await walletProvider.signTransaction(
+              transaction as VersionedTransaction,
+            )) as any;
+          },
+          signAllTransactions: async transactions => {
+            const signedTransactions: VersionedTransaction[] = [];
+            for (let i = 0; i < transactions.length; i++) {
+              signedTransactions[i] = await walletProvider.signTransaction(
+                transactions[i] as VersionedTransaction,
+              );
+            }
+            return signedTransactions as any;
           },
         },
         walletProvider.getConnection().rpcEndpoint,
-      ).use(nftPlugin);
-      const res = await sakInstance.methods.mintCollectionNFT(sakInstance, args.collectionMint, {
-        name: args.name,
-        uri: args.uri,
-      });
+        {},
+      ).use(NFTPlugin);
+      const res = await sakInstance.methods.mintCollectionNFT(
+        sakInstance,
+        new PublicKey(args.collectionMint),
+        {
+          name: args.name,
+          uri: args.uri,
+        },
+      );
       const nftAddress = res.mint.toBase58();
       return `Successfully minted NFT with address: ${nftAddress}`;
     } catch (e) {
@@ -254,22 +373,63 @@ export class MetaplexActionProvider extends ActionProvider<SvmWalletProvider> {
     args: z.infer<typeof SearchAssetsSchema>,
   ): Promise<string> {
     try {
-      const { SolanaAgentKit } = await SAK;
-      const nftPlugin = await NFTPlugin;
+      // const { SolanaAgentKit } = await SAK;
+      // const NFTPlugin = await NFTPlugin;
       const sakInstance = new SolanaAgentKit(
         {
           ...walletProvider,
+          publicKey: walletProvider.getPublicKey(),
           sendTransaction: async transaction => {
-            return await walletProvider.signAndSendTransaction(transaction);
+            return await walletProvider.signAndSendTransaction(transaction as VersionedTransaction);
+          },
+          signTransaction: async transaction => {
+            return (await walletProvider.signTransaction(
+              transaction as VersionedTransaction,
+            )) as any;
+          },
+          signAllTransactions: async transactions => {
+            const signedTransactions: VersionedTransaction[] = [];
+            for (let i = 0; i < transactions.length; i++) {
+              signedTransactions[i] = await walletProvider.signTransaction(
+                transactions[i] as VersionedTransaction,
+              );
+            }
+            return signedTransactions as any;
           },
         },
         walletProvider.getConnection().rpcEndpoint,
-      ).use(nftPlugin);
-      const res = await sakInstance.methods.searchAssets(sakInstance, args);
+        {},
+      ).use(NFTPlugin);
+      const res = await sakInstance.methods.searchAssets(sakInstance, {
+        frozen: args.frozen,
+        // @ts-expect-error - creator is a PublicKey
+        creator: args.creator ? new PublicKey(args.creator) : null,
+        jsonUri: args.jsonUri,
+        // @ts-expect-error - authority is a PublicKey
+        authority: args.authority ? new PublicKey(args.authority) : null,
+        conditionType: args.conditionType,
+        compressed: args.compressed,
+        // @ts-expect-error - owner is a PublicKey
+        owner: args.owner ? new PublicKey(args.owner) : null,
+        ownerType: args.ownerType,
+        // @ts-expect-error - supplyMint is a PublicKey
+        supplyMint: args.supplyMint ? new PublicKey(args.supplyMint) : null,
+      });
       const assets = JSON.stringify(res.items, null, 2);
       return `Found asset: ${assets}`;
     } catch (e) {
       return `Error searching for assets: ${e}`;
     }
+  }
+
+  /**
+   * Checks if the action provider supports the given network.
+   * Only supports Solana networks.
+   *
+   * @param network - The network to check support for
+   * @returns True if the network is a Solana network
+   */
+  supportsNetwork(network: Network): boolean {
+    return network.protocolFamily == "svm" && network.networkId === "solana-mainnet";
   }
 }
