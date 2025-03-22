@@ -3,7 +3,6 @@ import { Network } from "../../network";
 import { SvmWalletProvider } from "../../wallet-providers";
 import z from "zod";
 import { CreateAction } from "../actionDecorator";
-import { PublicKey, VersionedTransaction } from "@solana/web3.js";
 import {
   DeployCollectionSchema,
   DeployTokenSchema,
@@ -54,8 +53,21 @@ export class MetaplexActionProvider extends ActionProvider<SvmWalletProvider> {
   ): Promise<string> {
     try {
       const { SolanaAgentKit } = await SAK;
-      SolanaAgentKit;
-      const mintAddress = "";
+      const nftPlugin = await NFTPlugin;
+      const sakInstance = new SolanaAgentKit(
+        walletProvider,
+        walletProvider.getConnection().rpcEndpoint,
+      ).use(nftPlugin);
+      const res = await sakInstance.methods.deployToken(
+        sakInstance,
+        args.name,
+        args.uri,
+        args.symbol,
+        args.authority,
+        args.decimals,
+        args.initialSupply,
+      );
+      const mintAddress = res.mint.toBase58();
       return `Successfully deployed token with name: ${args.name}, symbol: ${args.symbol}, mint: ${mintAddress}, and URI: ${args.uri}`;
     } catch (e) {
       return `Error deploying token: ${e}`;
@@ -74,7 +86,19 @@ export class MetaplexActionProvider extends ActionProvider<SvmWalletProvider> {
     args: z.infer<typeof DeployCollectionSchema>,
   ): Promise<string> {
     try {
-      const collectionAddress = "";
+      const { SolanaAgentKit } = await SAK;
+      const nftPlugin = await NFTPlugin;
+      const sakInstance = new SolanaAgentKit(
+        walletProvider,
+        walletProvider.getConnection().rpcEndpoint,
+      ).use(nftPlugin);
+      const res = await sakInstance.methods.deployCollection(sakInstance, {
+        name: args.name,
+        uri: args.uri,
+        royaltyBasisPoints: args.royaltyBasisPoints,
+        creators: args.creators,
+      });
+      const collectionAddress = res.collectionAddress.toBase58();
       return `Successfully deployed collection with name: ${args.name}, collection address: ${collectionAddress}, and URI: ${args.uri}`;
     } catch (e) {
       return `Error deploying collection: ${e}`;
@@ -93,7 +117,14 @@ export class MetaplexActionProvider extends ActionProvider<SvmWalletProvider> {
     args: z.infer<typeof GetAssetSchema>,
   ): Promise<string> {
     try {
-      const assetDetails = "";
+      const { SolanaAgentKit } = await SAK;
+      const nftPlugin = await NFTPlugin;
+      const sakInstance = new SolanaAgentKit(
+        walletProvider,
+        walletProvider.getConnection().rpcEndpoint,
+      ).use(nftPlugin);
+      const res = await sakInstance.methods.getAsset(sakInstance, args.assetId);
+      const assetDetails = JSON.stringify(res, null, 2);
       return `Here are the asset details for asset ID: ${args.assetId}, ${assetDetails}`;
     } catch (e) {
       return `Error getting asset: ${e}`;
@@ -112,7 +143,14 @@ export class MetaplexActionProvider extends ActionProvider<SvmWalletProvider> {
     args: z.infer<typeof GetAssetsByAuthoritySchema>,
   ): Promise<string> {
     try {
-      const assets = "";
+      const { SolanaAgentKit } = await SAK;
+      const nftPlugin = await NFTPlugin;
+      const sakInstance = new SolanaAgentKit(
+        walletProvider,
+        walletProvider.getConnection().rpcEndpoint,
+      ).use(nftPlugin);
+      const res = await sakInstance.methods.getAssetsByAuthority(sakInstance, args);
+      const assets = JSON.stringify(res, null, 2);
       return `Here are the assets owned by authority address: ${args.authority}, ${assets}`;
     } catch (e) {
       return `Error getting assets: ${e}`;
@@ -131,7 +169,14 @@ export class MetaplexActionProvider extends ActionProvider<SvmWalletProvider> {
     args: z.infer<typeof GetAssetsByCreatorSchema>,
   ): Promise<string> {
     try {
-      const assets = "";
+      const { SolanaAgentKit } = await SAK;
+      const nftPlugin = await NFTPlugin;
+      const sakInstance = new SolanaAgentKit(
+        walletProvider,
+        walletProvider.getConnection().rpcEndpoint,
+      ).use(nftPlugin);
+      const res = await sakInstance.methods.getAssetsByCreator(sakInstance, args);
+      const assets = JSON.stringify(res, null, 2);
       return `Here are the assets created by creator address: ${args.creator}, ${assets}`;
     } catch (e) {
       return `Error getting assets: ${e}`;
@@ -150,7 +195,17 @@ export class MetaplexActionProvider extends ActionProvider<SvmWalletProvider> {
     args: z.infer<typeof MintNFTSchema>,
   ): Promise<string> {
     try {
-      const nftAddress = "";
+      const { SolanaAgentKit } = await SAK;
+      const nftPlugin = await NFTPlugin;
+      const sakInstance = new SolanaAgentKit(
+        walletProvider,
+        walletProvider.getConnection().rpcEndpoint,
+      ).use(nftPlugin);
+      const res = await sakInstance.methods.mintCollectionNFT(sakInstance, args.collectionMint, {
+        name: args.name,
+        uri: args.uri,
+      });
+      const nftAddress = res.mint.toBase58();
       return `Successfully minted NFT with address: ${nftAddress}`;
     } catch (e) {
       return `Error minting NFT: ${e}`;
@@ -169,8 +224,15 @@ export class MetaplexActionProvider extends ActionProvider<SvmWalletProvider> {
     args: z.infer<typeof SearchAssetsSchema>,
   ): Promise<string> {
     try {
-      const asset = "";
-      return `Found asset: ${asset}`;
+      const { SolanaAgentKit } = await SAK;
+      const nftPlugin = await NFTPlugin;
+      const sakInstance = new SolanaAgentKit(
+        walletProvider,
+        walletProvider.getConnection().rpcEndpoint,
+      ).use(nftPlugin);
+      const res = await sakInstance.methods.searchAssets(sakInstance, args);
+      const assets = JSON.stringify(res.items, null, 2);
+      return `Found asset: ${assets}`;
     } catch (e) {
       return `Error searching for assets: ${e}`;
     }

@@ -26,6 +26,14 @@ export const DeployCollectionSchema = z.object({
   name: z.string().min(1, "Name is required"),
   uri: z.string().url("URI must be a valid URL"),
   royaltyBasisPoints: z.number().min(0).max(10000).optional(),
+  creators: z
+    .array(
+      z.object({
+        address: z.string().min(1, "Creator address is required"),
+        percentage: z.number().min(0).max(100).optional(),
+      }),
+    )
+    .optional(),
 });
 
 /**
