@@ -55,7 +55,12 @@ export class MetaplexActionProvider extends ActionProvider<SvmWalletProvider> {
       const { SolanaAgentKit } = await SAK;
       const nftPlugin = await NFTPlugin;
       const sakInstance = new SolanaAgentKit(
-        walletProvider,
+        {
+          ...walletProvider,
+          sendTransaction: async transaction => {
+            return await walletProvider.signAndSendTransaction(transaction);
+          },
+        },
         walletProvider.getConnection().rpcEndpoint,
       ).use(nftPlugin);
       const res = await sakInstance.methods.deployToken(
@@ -89,7 +94,12 @@ export class MetaplexActionProvider extends ActionProvider<SvmWalletProvider> {
       const { SolanaAgentKit } = await SAK;
       const nftPlugin = await NFTPlugin;
       const sakInstance = new SolanaAgentKit(
-        walletProvider,
+        {
+          ...walletProvider,
+          sendTransaction: async transaction => {
+            return await walletProvider.signAndSendTransaction(transaction);
+          },
+        },
         walletProvider.getConnection().rpcEndpoint,
       ).use(nftPlugin);
       const res = await sakInstance.methods.deployCollection(sakInstance, {
@@ -120,7 +130,12 @@ export class MetaplexActionProvider extends ActionProvider<SvmWalletProvider> {
       const { SolanaAgentKit } = await SAK;
       const nftPlugin = await NFTPlugin;
       const sakInstance = new SolanaAgentKit(
-        walletProvider,
+        {
+          ...walletProvider,
+          sendTransaction: async transaction => {
+            return await walletProvider.signAndSendTransaction(transaction);
+          },
+        },
         walletProvider.getConnection().rpcEndpoint,
       ).use(nftPlugin);
       const res = await sakInstance.methods.getAsset(sakInstance, args.assetId);
@@ -146,7 +161,12 @@ export class MetaplexActionProvider extends ActionProvider<SvmWalletProvider> {
       const { SolanaAgentKit } = await SAK;
       const nftPlugin = await NFTPlugin;
       const sakInstance = new SolanaAgentKit(
-        walletProvider,
+        {
+          ...walletProvider,
+          sendTransaction: async transaction => {
+            return await walletProvider.signAndSendTransaction(transaction);
+          },
+        },
         walletProvider.getConnection().rpcEndpoint,
       ).use(nftPlugin);
       const res = await sakInstance.methods.getAssetsByAuthority(sakInstance, args);
@@ -172,7 +192,12 @@ export class MetaplexActionProvider extends ActionProvider<SvmWalletProvider> {
       const { SolanaAgentKit } = await SAK;
       const nftPlugin = await NFTPlugin;
       const sakInstance = new SolanaAgentKit(
-        walletProvider,
+        {
+          ...walletProvider,
+          sendTransaction: async transaction => {
+            return await walletProvider.signAndSendTransaction(transaction);
+          },
+        },
         walletProvider.getConnection().rpcEndpoint,
       ).use(nftPlugin);
       const res = await sakInstance.methods.getAssetsByCreator(sakInstance, args);
@@ -198,7 +223,12 @@ export class MetaplexActionProvider extends ActionProvider<SvmWalletProvider> {
       const { SolanaAgentKit } = await SAK;
       const nftPlugin = await NFTPlugin;
       const sakInstance = new SolanaAgentKit(
-        walletProvider,
+        {
+          ...walletProvider,
+          sendTransaction: async transaction => {
+            return await walletProvider.signAndSendTransaction(transaction);
+          },
+        },
         walletProvider.getConnection().rpcEndpoint,
       ).use(nftPlugin);
       const res = await sakInstance.methods.mintCollectionNFT(sakInstance, args.collectionMint, {
@@ -227,7 +257,12 @@ export class MetaplexActionProvider extends ActionProvider<SvmWalletProvider> {
       const { SolanaAgentKit } = await SAK;
       const nftPlugin = await NFTPlugin;
       const sakInstance = new SolanaAgentKit(
-        walletProvider,
+        {
+          ...walletProvider,
+          sendTransaction: async transaction => {
+            return await walletProvider.signAndSendTransaction(transaction);
+          },
+        },
         walletProvider.getConnection().rpcEndpoint,
       ).use(nftPlugin);
       const res = await sakInstance.methods.searchAssets(sakInstance, args);
