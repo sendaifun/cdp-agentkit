@@ -12,7 +12,9 @@ import {
   MintNFTSchema,
   SearchAssetsSchema,
 } from "./schemas";
+// @ts-ignore
 import { SolanaAgentKit } from "solana-agent-kit";
+// @ts-ignore
 import NFTPlugin from "@solana-agent-kit/plugin-nft";
 import { PublicKey, VersionedTransaction } from "@solana/web3.js";
 
@@ -98,7 +100,7 @@ export class MetaplexActionProvider extends ActionProvider<SvmWalletProvider> {
         args.decimals,
         args.initialSupply,
       );
-      // @ts-expect-error - mint is a PublicKey
+      //  - mint is a PublicKey
       const mintAddress = res.mint.toBase58();
       return `Successfully deployed token with name: ${args.name}, symbol: ${args.symbol}, mint: ${mintAddress}, and URI: ${args.uri}`;
     } catch (e) {
@@ -246,7 +248,7 @@ export class MetaplexActionProvider extends ActionProvider<SvmWalletProvider> {
       ).use(NFTPlugin);
       const res = await sakInstance.methods.getAssetsByAuthority(sakInstance, {
         ...args,
-        // @ts-expect-error - authority is a PublicKey
+        //  - authority is a PublicKey
         authority: new PublicKey(args.authority),
       });
       const assets = JSON.stringify(res, null, 2);
@@ -297,7 +299,7 @@ export class MetaplexActionProvider extends ActionProvider<SvmWalletProvider> {
       ).use(NFTPlugin);
       const res = await sakInstance.methods.getAssetsByCreator(sakInstance, {
         ...args,
-        // @ts-expect-error - unnecessary type mismatch
+        //  - unnecessary type mismatch
         creator: new PublicKey(args.creator),
       });
       const assets = JSON.stringify(res, null, 2);
@@ -402,17 +404,17 @@ export class MetaplexActionProvider extends ActionProvider<SvmWalletProvider> {
       ).use(NFTPlugin);
       const res = await sakInstance.methods.searchAssets(sakInstance, {
         frozen: args.frozen,
-        // @ts-expect-error - creator is a PublicKey
+        //  - creator is a PublicKey
         creator: args.creator ? new PublicKey(args.creator) : null,
         jsonUri: args.jsonUri,
-        // @ts-expect-error - authority is a PublicKey
+        //  - authority is a PublicKey
         authority: args.authority ? new PublicKey(args.authority) : null,
         conditionType: args.conditionType,
         compressed: args.compressed,
-        // @ts-expect-error - owner is a PublicKey
+        //  - owner is a PublicKey
         owner: args.owner ? new PublicKey(args.owner) : null,
         ownerType: args.ownerType,
-        // @ts-expect-error - supplyMint is a PublicKey
+        //  - supplyMint is a PublicKey
         supplyMint: args.supplyMint ? new PublicKey(args.supplyMint) : null,
       });
       const assets = JSON.stringify(res.items, null, 2);

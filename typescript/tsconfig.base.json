@@ -8,7 +8,7 @@
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "moduleResolution": "bundler",
+    "moduleResolution": "node16",
     "forceConsistentCasingInFileNames": true,
     "declaration": true,
     "noImplicitAny": false,
