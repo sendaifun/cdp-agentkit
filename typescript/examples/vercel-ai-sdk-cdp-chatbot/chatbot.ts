@@ -5,10 +5,8 @@ import {
   pythActionProvider,
   walletActionProvider,
   CdpWalletProvider,
-  SolanaKeypairWalletProvider,
-  MetaplexActionProvider,
-} from "../../agentkit";
-import { getVercelAITools } from "../../framework-extensions/vercel-ai-sdk/src";
+} from "@coinbase/agentkit";
+import { getVercelAITools } from "@coinbase/agentkit-vercel-ai-sdk";
 import { openai } from "@ai-sdk/openai";
 import { generateId, Message, streamText, ToolSet } from "ai";
 import * as dotenv from "dotenv";
@@ -27,26 +25,26 @@ function validateEnvironment(): void {
   const missingVars: string[] = [];
 
   // Check required variables
-  // const requiredVars = ["OPENAI_API_KEY", "CDP_API_KEY_NAME", "CDP_API_KEY_PRIVATE_KEY"];
-  // requiredVars.forEach(varName => {
-  //   if (!process.env[varName]) {
-  //     missingVars.push(varName);
-  //   }
-  // });
+  const requiredVars = ["OPENAI_API_KEY", "CDP_API_KEY_NAME", "CDP_API_KEY_PRIVATE_KEY"];
+  requiredVars.forEach(varName => {
+    if (!process.env[varName]) {
+      missingVars.push(varName);
+    }
+  });
 
   // Exit if any required variables are missing
-  // if (missingVars.length > 0) {
-  //   console.error("Error: Required environment variables are not set");
-  //   missingVars.forEach(varName => {
-  //     console.error(`${varName}=your_${varName.toLowerCase()}_here`);
-  //   });
-  //   process.exit(1);
-  // }
+  if (missingVars.length > 0) {
+    console.error("Error: Required environment variables are not set");
+    missingVars.forEach(varName => {
+      console.error(`${varName}=your_${varName.toLowerCase()}_here`);
+    });
+    process.exit(1);
+  }
 
   // Warn about optional NETWORK_ID
-  // if (!process.env.NETWORK_ID) {
-  //   console.warn("Warning: NETWORK_ID not set, defaulting to base-sepolia testnet");
-  // }
+  if (!process.env.NETWORK_ID) {
+    console.warn("Warning: NETWORK_ID not set, defaulting to base-sepolia testnet");
+  }
 }
 
 // Add this right after imports and before any other code
@@ -85,16 +83,12 @@ async function initializeAgent() {
       }
     }
 
-    // const walletProvider = await CdpWalletProvider.configureWithWallet({
-    //   apiKeyName: process.env.CDP_API_KEY_NAME,
-    //   apiKeyPrivateKey: process.env.CDP_API_KEY_PRIVATE_KEY?.replace(/\\n/g, "\n"),
-    //   cdpWalletData: walletDataStr || undefined,
-    //   networkId: process.env.NETWORK_ID || "base-sepolia",
-    // });
-    const walletProvider = await SolanaKeypairWalletProvider.fromRpcUrl(
-      process.env.RPC_URL as string,
-      process.env.SOLANA_PRIVATE_KEY as string,
-    );
+    const walletProvider = await CdpWalletProvider.configureWithWallet({
+      apiKeyName: process.env.CDP_API_KEY_NAME,
+      apiKeyPrivateKey: process.env.CDP_API_KEY_PRIVATE_KEY?.replace(/\\n/g, "\n"),
+      cdpWalletData: walletDataStr || undefined,
+      networkId: process.env.NETWORK_ID || "base-sepolia",
+    });
 
     const agentKit = await AgentKit.from({
       walletProvider,
@@ -106,7 +100,6 @@ async function initializeAgent() {
         erc721ActionProvider(),
         pythActionProvider(),
         walletActionProvider(),
-        new MetaplexActionProvider(),
       ],
     });
 
