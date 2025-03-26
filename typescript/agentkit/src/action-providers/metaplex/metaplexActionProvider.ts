@@ -12,14 +12,9 @@ import {
   MintNFTSchema,
   SearchAssetsSchema,
 } from "./schemas";
-// @ts-ignore
 import { SolanaAgentKit } from "solana-agent-kit";
-// @ts-ignore
 import NFTPlugin from "@solana-agent-kit/plugin-nft";
 import { PublicKey, VersionedTransaction } from "@solana/web3.js";
-
-// const SAK = import("solana-agent-kit");
-// const NFTPlugin = import("@solana-agent-kit/plugin-nft");
 
 /**
  * MetaplexActionProvider handles token and NFT creation using Metaplex.
@@ -53,8 +48,6 @@ export class MetaplexActionProvider extends ActionProvider<SvmWalletProvider> {
     args: z.infer<typeof DeployTokenSchema>,
   ): Promise<string> {
     try {
-      // const { SolanaAgentKit } = await SAK;
-      // const NFTPlugin = await NFTPlugin;
       const sakInstance = new SolanaAgentKit(
         {
           ...walletProvider,
@@ -100,7 +93,7 @@ export class MetaplexActionProvider extends ActionProvider<SvmWalletProvider> {
         args.decimals,
         args.initialSupply,
       );
-      //  - mint is a PublicKey
+      // @ts-expect-error  - mint is a PublicKey
       const mintAddress = res.mint.toBase58();
       return `Successfully deployed token with name: ${args.name}, symbol: ${args.symbol}, mint: ${mintAddress}, and URI: ${args.uri}`;
     } catch (e) {
@@ -108,6 +101,12 @@ export class MetaplexActionProvider extends ActionProvider<SvmWalletProvider> {
     }
   }
 
+  /**
+   * Deploys a new NFT collection on the Solana blockchain using Metaplex.
+   * @param walletProvider
+   * @param args
+   * @returns Promise<string>
+   */
   @CreateAction({
     name: "deploy_collection",
     description: `
@@ -120,8 +119,6 @@ export class MetaplexActionProvider extends ActionProvider<SvmWalletProvider> {
     args: z.infer<typeof DeployCollectionSchema>,
   ): Promise<string> {
     try {
-      // const { SolanaAgentKit } = await SAK;
-      // const NFTPlugin = await NFTPlugin;
       const sakInstance = new SolanaAgentKit(
         {
           ...walletProvider,
@@ -160,6 +157,12 @@ export class MetaplexActionProvider extends ActionProvider<SvmWalletProvider> {
     }
   }
 
+  /**
+   * Fetch asset details using the Metaplex DAS API.
+   * @param walletProvider
+   * @param args
+   * @returns Promise<string>
+   */
   @CreateAction({
     name: "get_asset",
     description: `
@@ -172,8 +175,6 @@ export class MetaplexActionProvider extends ActionProvider<SvmWalletProvider> {
     args: z.infer<typeof GetAssetSchema>,
   ): Promise<string> {
     try {
-      // const { SolanaAgentKit } = await SAK;
-      // const NFTPlugin = await NFTPlugin;
       const sakInstance = new SolanaAgentKit(
         {
           ...walletProvider,
@@ -207,6 +208,12 @@ export class MetaplexActionProvider extends ActionProvider<SvmWalletProvider> {
     }
   }
 
+  /**
+   * Fetch a list of assets owned by a specific address using the Metaplex DAS API.
+   * @param walletProvider
+   * @param args
+   * @returns Promise<string>
+   */
   @CreateAction({
     name: "get_assets_by_authority",
     description: `
@@ -219,8 +226,6 @@ export class MetaplexActionProvider extends ActionProvider<SvmWalletProvider> {
     args: z.infer<typeof GetAssetsByAuthoritySchema>,
   ): Promise<string> {
     try {
-      // const { SolanaAgentKit } = await SAK;
-      // const NFTPlugin = await NFTPlugin;
       const sakInstance = new SolanaAgentKit(
         {
           ...walletProvider,
@@ -248,7 +253,7 @@ export class MetaplexActionProvider extends ActionProvider<SvmWalletProvider> {
       ).use(NFTPlugin);
       const res = await sakInstance.methods.getAssetsByAuthority(sakInstance, {
         ...args,
-        //  - authority is a PublicKey
+        // @ts-expect-error  - authority is a PublicKey
         authority: new PublicKey(args.authority),
       });
       const assets = JSON.stringify(res, null, 2);
@@ -258,6 +263,12 @@ export class MetaplexActionProvider extends ActionProvider<SvmWalletProvider> {
     }
   }
 
+  /**
+   * Fetch a list of assets created by a specific address using the Metaplex DAS API.
+   * @param walletProvider
+   * @param args
+   * @returns Promise<string>
+   */
   @CreateAction({
     name: "get_assets_by_creator",
     description: `
@@ -270,8 +281,6 @@ export class MetaplexActionProvider extends ActionProvider<SvmWalletProvider> {
     args: z.infer<typeof GetAssetsByCreatorSchema>,
   ): Promise<string> {
     try {
-      // const { SolanaAgentKit } = await SAK;
-      // const NFTPlugin = await NFTPlugin;
       const sakInstance = new SolanaAgentKit(
         {
           ...walletProvider,
@@ -299,7 +308,7 @@ export class MetaplexActionProvider extends ActionProvider<SvmWalletProvider> {
       ).use(NFTPlugin);
       const res = await sakInstance.methods.getAssetsByCreator(sakInstance, {
         ...args,
-        //  - unnecessary type mismatch
+        // @ts-expect-error  - unnecessary type mismatch
         creator: new PublicKey(args.creator),
       });
       const assets = JSON.stringify(res, null, 2);
@@ -309,6 +318,12 @@ export class MetaplexActionProvider extends ActionProvider<SvmWalletProvider> {
     }
   }
 
+  /**
+   * Mint an NFT using Metaplex.
+   * @param walletProvider
+   * @param args
+   * @returns Promise<string>
+   */
   @CreateAction({
     name: "mint_nft",
     description: `
@@ -321,8 +336,6 @@ export class MetaplexActionProvider extends ActionProvider<SvmWalletProvider> {
     args: z.infer<typeof MintNFTSchema>,
   ): Promise<string> {
     try {
-      // const { SolanaAgentKit } = await SAK;
-      // const NFTPlugin = await NFTPlugin;
       const sakInstance = new SolanaAgentKit(
         {
           ...walletProvider,
@@ -363,6 +376,12 @@ export class MetaplexActionProvider extends ActionProvider<SvmWalletProvider> {
     }
   }
 
+  /**
+   * Search for assets using the Metaplex DAS API.
+   * @param walletProvider
+   * @param args
+   * @returns Promise<string>
+   */
   @CreateAction({
     name: "search_assets",
     description: `
@@ -375,8 +394,6 @@ export class MetaplexActionProvider extends ActionProvider<SvmWalletProvider> {
     args: z.infer<typeof SearchAssetsSchema>,
   ): Promise<string> {
     try {
-      // const { SolanaAgentKit } = await SAK;
-      // const NFTPlugin = await NFTPlugin;
       const sakInstance = new SolanaAgentKit(
         {
           ...walletProvider,
@@ -404,17 +421,17 @@ export class MetaplexActionProvider extends ActionProvider<SvmWalletProvider> {
       ).use(NFTPlugin);
       const res = await sakInstance.methods.searchAssets(sakInstance, {
         frozen: args.frozen,
-        //  - creator is a PublicKey
+        // @ts-expect-error  - creator is a PublicKey
         creator: args.creator ? new PublicKey(args.creator) : null,
         jsonUri: args.jsonUri,
-        //  - authority is a PublicKey
+        // @ts-expect-error  - authority is a PublicKey
         authority: args.authority ? new PublicKey(args.authority) : null,
         conditionType: args.conditionType,
         compressed: args.compressed,
-        //  - owner is a PublicKey
+        // @ts-expect-error  - owner is a PublicKey
         owner: args.owner ? new PublicKey(args.owner) : null,
         ownerType: args.ownerType,
-        //  - supplyMint is a PublicKey
+        // @ts-expect-error  - supplyMint is a PublicKey
         supplyMint: args.supplyMint ? new PublicKey(args.supplyMint) : null,
       });
       const assets = JSON.stringify(res.items, null, 2);

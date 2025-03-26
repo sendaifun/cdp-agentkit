@@ -6,8 +6,9 @@ import { Network } from "../../network";
 // Mock solana-agent-kit and @solana-agent-kit/plugin-nft
 jest.mock("solana-agent-kit", () => ({
   __esModule: true,
-  default: {
-    SolanaAgentKit: jest.fn().mockReturnValue({
+  SolanaAgentKit: jest.fn().mockImplementation(() => ({
+    use: jest.fn().mockReturnThis(), // Return the same object to allow chaining
+    methods: {
       createToken: jest.fn().mockResolvedValue({
         signature: "mock-token-signature",
         tokenAddress: "mockTokenAddress123456789",
@@ -16,9 +17,11 @@ jest.mock("solana-agent-kit", () => ({
         signature: "mock-collection-signature",
         collectionAddress: "mockCollectionAddress123456",
       }),
-      mintNFT: jest.fn().mockResolvedValue({
+      mintCollectionNFT: jest.fn().mockResolvedValue({
         signature: "mock-mint-signature",
-        tokenAddress: "mockNFTAddress123456789",
+        mint: {
+          toBase58: jest.fn().mockReturnValue("mockNFTAddress123456789")
+        }
       }),
       fetchAsset: jest.fn().mockResolvedValue({
         id: "mock-asset-id",
@@ -33,8 +36,36 @@ jest.mock("solana-agent-kit", () => ({
         ],
         total: 2,
       }),
-    }),
-  },
+      getAssetsByCreator: jest.fn().mockResolvedValue({
+        items: [
+          { id: "asset1", name: "Asset 1" },
+          { id: "asset2", name: "Asset 2" },
+        ],
+        total: 2,
+      }),
+      getAssetsByAuthority: jest.fn().mockResolvedValue({
+        items: [
+          { id: "asset1", name: "Asset 1" },
+          { id: "asset2", name: "Asset 2" },
+        ],
+        total: 2
+      }),
+      deployCollection: jest.fn().mockResolvedValue({
+        collectionAddress: {
+          toBase58: jest.fn().mockReturnValue("asdfasdfasdf")
+        }
+      }),
+      deployToken: jest.fn().mockResolvedValue({
+        mint: {
+          toBase58: jest.fn().mockReturnValue("mockTokenAddress123456789")
+        }
+      }),
+      getAsset: jest.fn().mockResolvedValue({
+        id: "mock-asset-id",
+        name: "Mock Asset"
+      })
+    }
+  })),
 }));
 
 jest.mock("@solana-agent-kit/plugin-nft", () => ({
