@@ -9,6 +9,7 @@ import {
   SignatureStatusConfig,
   VersionedTransaction,
   SignatureResult,
+  Transaction,
 } from "@solana/web3.js";
 
 /**
@@ -37,7 +38,9 @@ export abstract class SvmWalletProvider extends WalletProvider {
    * @param transaction - The transaction to sign.
    * @returns The signed transaction.
    */
-  abstract signTransaction(transaction: VersionedTransaction): Promise<VersionedTransaction>;
+  abstract signTransaction(
+    transaction: VersionedTransaction | Transaction,
+  ): Promise<VersionedTransaction | Transaction>;
 
   /**
    * Send a transaction.
@@ -45,7 +48,7 @@ export abstract class SvmWalletProvider extends WalletProvider {
    * @param transaction - The transaction to send.
    * @returns The signature.
    */
-  abstract sendTransaction(transaction: VersionedTransaction): Promise<string>;
+  abstract sendTransaction(transaction: VersionedTransaction | Transaction): Promise<string>;
 
   /**
    * Sign and send a transaction.
@@ -53,7 +56,7 @@ export abstract class SvmWalletProvider extends WalletProvider {
    * @param transaction - The transaction to sign and send.
    * @returns The signature.
    */
-  abstract signAndSendTransaction(transaction: VersionedTransaction): Promise<string>;
+  abstract signAndSendTransaction(transaction: VersionedTransaction | Transaction): Promise<string>;
 
   /**
    * Get the status of a transaction.

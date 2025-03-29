@@ -14,7 +14,7 @@ import {
 } from "./schemas";
 import { SolanaAgentKit } from "solana-agent-kit";
 import NFTPlugin from "@solana-agent-kit/plugin-nft";
-import { PublicKey, VersionedTransaction } from "@solana/web3.js";
+import { PublicKey, Transaction, VersionedTransaction } from "@solana/web3.js";
 
 /**
  * MetaplexActionProvider handles token and NFT creation using Metaplex.
@@ -61,7 +61,7 @@ export class MetaplexActionProvider extends ActionProvider<SvmWalletProvider> {
             )) as any;
           },
           signAllTransactions: async transactions => {
-            const signedTransactions: VersionedTransaction[] = [];
+            const signedTransactions: (VersionedTransaction | Transaction)[] = [];
             for (let i = 0; i < transactions.length; i++) {
               signedTransactions[i] = await walletProvider.signTransaction(
                 transactions[i] as VersionedTransaction,
@@ -69,9 +69,15 @@ export class MetaplexActionProvider extends ActionProvider<SvmWalletProvider> {
             }
             return signedTransactions as any;
           },
+          signAndSendTransaction: async tx => ({
+            signature: await walletProvider.signAndSendTransaction(tx),
+          }),
+          signMessage: async message => {
+            return message;
+          },
         },
         walletProvider.getConnection().rpcEndpoint,
-        {},
+        { signOnly: false },
       ).use(NFTPlugin);
       const res = await sakInstance.methods.deployToken(
         sakInstance,
@@ -93,7 +99,7 @@ export class MetaplexActionProvider extends ActionProvider<SvmWalletProvider> {
         args.decimals,
         args.initialSupply,
       );
-      // @ts-expect-error  - mint is a PublicKey
+      // @ts-expect-error mint is defined
       const mintAddress = res.mint.toBase58();
       return `Successfully deployed token with name: ${args.name}, symbol: ${args.symbol}, mint: ${mintAddress}, and URI: ${args.uri}`;
     } catch (e) {
@@ -132,13 +138,19 @@ export class MetaplexActionProvider extends ActionProvider<SvmWalletProvider> {
             )) as any;
           },
           signAllTransactions: async transactions => {
-            const signedTransactions: VersionedTransaction[] = [];
+            const signedTransactions: (VersionedTransaction | Transaction)[] = [];
             for (let i = 0; i < transactions.length; i++) {
               signedTransactions[i] = await walletProvider.signTransaction(
                 transactions[i] as VersionedTransaction,
               );
             }
             return signedTransactions as any;
+          },
+          signAndSendTransaction: async tx => ({
+            signature: await walletProvider.signAndSendTransaction(tx),
+          }),
+          signMessage: async message => {
+            return message;
           },
         },
         walletProvider.getConnection().rpcEndpoint,
@@ -188,13 +200,16 @@ export class MetaplexActionProvider extends ActionProvider<SvmWalletProvider> {
             )) as any;
           },
           signAllTransactions: async transactions => {
-            const signedTransactions: VersionedTransaction[] = [];
+            const signedTransactions: (VersionedTransaction | Transaction)[] = [];
             for (let i = 0; i < transactions.length; i++) {
               signedTransactions[i] = await walletProvider.signTransaction(
                 transactions[i] as VersionedTransaction,
               );
             }
             return signedTransactions as any;
+          },
+          signMessage: async message => {
+            return message;
           },
         },
         walletProvider.getConnection().rpcEndpoint,
@@ -239,7 +254,7 @@ export class MetaplexActionProvider extends ActionProvider<SvmWalletProvider> {
             )) as any;
           },
           signAllTransactions: async transactions => {
-            const signedTransactions: VersionedTransaction[] = [];
+            const signedTransactions: (VersionedTransaction | Transaction)[] = [];
             for (let i = 0; i < transactions.length; i++) {
               signedTransactions[i] = await walletProvider.signTransaction(
                 transactions[i] as VersionedTransaction,
@@ -247,14 +262,18 @@ export class MetaplexActionProvider extends ActionProvider<SvmWalletProvider> {
             }
             return signedTransactions as any;
           },
+
+          signMessage: async message => {
+            return message;
+          },
         },
         walletProvider.getConnection().rpcEndpoint,
         {},
       ).use(NFTPlugin);
       const res = await sakInstance.methods.getAssetsByAuthority(sakInstance, {
         ...args,
-        // @ts-expect-error  - authority is a PublicKey
-        authority: new PublicKey(args.authority),
+        // @ts-expect-error - Type mismatch in plugin
+        authority: args.authority,
       });
       const assets = JSON.stringify(res, null, 2);
       return `Here are the assets owned by authority address: ${args.authority}, ${assets}`;
@@ -294,7 +313,7 @@ export class MetaplexActionProvider extends ActionProvider<SvmWalletProvider> {
             )) as any;
           },
           signAllTransactions: async transactions => {
-            const signedTransactions: VersionedTransaction[] = [];
+            const signedTransactions: (VersionedTransaction | Transaction)[] = [];
             for (let i = 0; i < transactions.length; i++) {
               signedTransactions[i] = await walletProvider.signTransaction(
                 transactions[i] as VersionedTransaction,
@@ -302,14 +321,17 @@ export class MetaplexActionProvider extends ActionProvider<SvmWalletProvider> {
             }
             return signedTransactions as any;
           },
+          signMessage: async message => {
+            return message;
+          },
         },
         walletProvider.getConnection().rpcEndpoint,
         {},
       ).use(NFTPlugin);
       const res = await sakInstance.methods.getAssetsByCreator(sakInstance, {
         ...args,
-        // @ts-expect-error  - unnecessary type mismatch
-        creator: new PublicKey(args.creator),
+        // @ts-expect-error - Type mismatch in plugin, metaplex has a PublicKey type that's just a glorified string extention
+        creator: args.creator,
       });
       const assets = JSON.stringify(res, null, 2);
       return `Here are the assets created by creator address: ${args.creator}, ${assets}`;
@@ -349,13 +371,19 @@ export class MetaplexActionProvider extends ActionProvider<SvmWalletProvider> {
             )) as any;
           },
           signAllTransactions: async transactions => {
-            const signedTransactions: VersionedTransaction[] = [];
+            const signedTransactions: (VersionedTransaction | Transaction)[] = [];
             for (let i = 0; i < transactions.length; i++) {
               signedTransactions[i] = await walletProvider.signTransaction(
                 transactions[i] as VersionedTransaction,
               );
             }
             return signedTransactions as any;
+          },
+          signAndSendTransaction: async tx => ({
+            signature: await walletProvider.signAndSendTransaction(tx),
+          }),
+          signMessage: async message => {
+            return message;
           },
         },
         walletProvider.getConnection().rpcEndpoint,
@@ -407,7 +435,7 @@ export class MetaplexActionProvider extends ActionProvider<SvmWalletProvider> {
             )) as any;
           },
           signAllTransactions: async transactions => {
-            const signedTransactions: VersionedTransaction[] = [];
+            const signedTransactions: (VersionedTransaction | Transaction)[] = [];
             for (let i = 0; i < transactions.length; i++) {
               signedTransactions[i] = await walletProvider.signTransaction(
                 transactions[i] as VersionedTransaction,
@@ -415,24 +443,27 @@ export class MetaplexActionProvider extends ActionProvider<SvmWalletProvider> {
             }
             return signedTransactions as any;
           },
+          signMessage: async message => {
+            return message;
+          },
         },
         walletProvider.getConnection().rpcEndpoint,
         {},
       ).use(NFTPlugin);
       const res = await sakInstance.methods.searchAssets(sakInstance, {
         frozen: args.frozen,
-        // @ts-expect-error  - creator is a PublicKey
-        creator: args.creator ? new PublicKey(args.creator) : null,
+        // @ts-expect-error - Type mismatch in plugin
+        creator: args.creator ?? null,
         jsonUri: args.jsonUri,
-        // @ts-expect-error  - authority is a PublicKey
-        authority: args.authority ? new PublicKey(args.authority) : null,
+        // @ts-expect-error - Type mismatch in plugin
+        authority: args.authority ?? null,
         conditionType: args.conditionType,
         compressed: args.compressed,
-        // @ts-expect-error  - owner is a PublicKey
-        owner: args.owner ? new PublicKey(args.owner) : null,
+        // @ts-expect-error - Type mismatch in plugin
+        owner: args.owner ?? null,
         ownerType: args.ownerType,
-        // @ts-expect-error  - supplyMint is a PublicKey
-        supplyMint: args.supplyMint ? new PublicKey(args.supplyMint) : null,
+        // @ts-expect-error - Type mismatch in plugin
+        supplyMint: args.supplyMint ?? null,
       });
       const assets = JSON.stringify(res.items, null, 2);
       return `Found asset: ${assets}`;
