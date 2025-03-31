@@ -1,7 +1,7 @@
 import { ActionProvider } from "../actionProvider";
-import { Network } from "../../network";
-import { SvmWalletProvider } from "../../wallet-providers";
-import z from "zod";
+import type { Network } from "../../network";
+import type { SvmWalletProvider } from "../../wallet-providers";
+import type z from "zod";
 import { CreateAction } from "../actionDecorator";
 import {
   DeployCollectionSchema,
@@ -14,7 +14,7 @@ import {
 } from "./schemas";
 import { SolanaAgentKit } from "solana-agent-kit";
 import NFTPlugin from "@solana-agent-kit/plugin-nft";
-import { PublicKey, Transaction, VersionedTransaction } from "@solana/web3.js";
+import { PublicKey, type Transaction, type VersionedTransaction } from "@solana/web3.js";
 
 /**
  * MetaplexActionProvider handles token and NFT creation using Metaplex.
@@ -55,11 +55,11 @@ export class MetaplexActionProvider extends ActionProvider<SvmWalletProvider> {
           sendTransaction: async transaction => {
             return await walletProvider.signAndSendTransaction(transaction as VersionedTransaction);
           },
+          // @ts-expect-error - Type mismatch in plugin
           signTransaction: async transaction => {
-            return (await walletProvider.signTransaction(
-              transaction as VersionedTransaction,
-            )) as any;
+            return await walletProvider.signTransaction(transaction as VersionedTransaction);
           },
+          // @ts-expect-error - Type mismatch in plugin
           signAllTransactions: async transactions => {
             const signedTransactions: (VersionedTransaction | Transaction)[] = [];
             for (let i = 0; i < transactions.length; i++) {
@@ -67,7 +67,7 @@ export class MetaplexActionProvider extends ActionProvider<SvmWalletProvider> {
                 transactions[i] as VersionedTransaction,
               );
             }
-            return signedTransactions as any;
+            return signedTransactions;
           },
           signAndSendTransaction: async tx => ({
             signature: await walletProvider.signAndSendTransaction(tx),
@@ -109,8 +109,9 @@ export class MetaplexActionProvider extends ActionProvider<SvmWalletProvider> {
 
   /**
    * Deploys a new NFT collection on the Solana blockchain using Metaplex.
-   * @param walletProvider
-   * @param args
+   *
+   * @param walletProvider - The wallet provider to use for signing transactions
+   * @param args - The arguments for deploying the collection
    * @returns Promise<string>
    */
   @CreateAction({
@@ -132,11 +133,11 @@ export class MetaplexActionProvider extends ActionProvider<SvmWalletProvider> {
           sendTransaction: async transaction => {
             return await walletProvider.signAndSendTransaction(transaction as VersionedTransaction);
           },
+          // @ts-expect-error - Type mismatch in plugin
           signTransaction: async transaction => {
-            return (await walletProvider.signTransaction(
-              transaction as VersionedTransaction,
-            )) as any;
+            return await walletProvider.signTransaction(transaction as VersionedTransaction);
           },
+          // @ts-expect-error - Type mismatch in plugin
           signAllTransactions: async transactions => {
             const signedTransactions: (VersionedTransaction | Transaction)[] = [];
             for (let i = 0; i < transactions.length; i++) {
@@ -144,7 +145,7 @@ export class MetaplexActionProvider extends ActionProvider<SvmWalletProvider> {
                 transactions[i] as VersionedTransaction,
               );
             }
-            return signedTransactions as any;
+            return signedTransactions;
           },
           signAndSendTransaction: async tx => ({
             signature: await walletProvider.signAndSendTransaction(tx),
@@ -171,8 +172,9 @@ export class MetaplexActionProvider extends ActionProvider<SvmWalletProvider> {
 
   /**
    * Fetch asset details using the Metaplex DAS API.
-   * @param walletProvider
-   * @param args
+   *
+   * @param walletProvider - The wallet provider to use for signing transactions
+   * @param args - The arguments for fetching the asset
    * @returns Promise<string>
    */
   @CreateAction({
@@ -194,11 +196,11 @@ export class MetaplexActionProvider extends ActionProvider<SvmWalletProvider> {
           sendTransaction: async transaction => {
             return await walletProvider.signAndSendTransaction(transaction as VersionedTransaction);
           },
+          // @ts-expect-error - Type mismatch in plugin
           signTransaction: async transaction => {
-            return (await walletProvider.signTransaction(
-              transaction as VersionedTransaction,
-            )) as any;
+            return await walletProvider.signTransaction(transaction as VersionedTransaction);
           },
+          // @ts-expect-error - Type mismatch in plugin
           signAllTransactions: async transactions => {
             const signedTransactions: (VersionedTransaction | Transaction)[] = [];
             for (let i = 0; i < transactions.length; i++) {
@@ -206,7 +208,7 @@ export class MetaplexActionProvider extends ActionProvider<SvmWalletProvider> {
                 transactions[i] as VersionedTransaction,
               );
             }
-            return signedTransactions as any;
+            return signedTransactions;
           },
           signMessage: async message => {
             return message;
@@ -225,8 +227,9 @@ export class MetaplexActionProvider extends ActionProvider<SvmWalletProvider> {
 
   /**
    * Fetch a list of assets owned by a specific address using the Metaplex DAS API.
-   * @param walletProvider
-   * @param args
+   *
+   * @param walletProvider - The wallet provider to use for signing transactions
+   * @param args - The arguments for fetching the assets
    * @returns Promise<string>
    */
   @CreateAction({
@@ -248,11 +251,11 @@ export class MetaplexActionProvider extends ActionProvider<SvmWalletProvider> {
           sendTransaction: async transaction => {
             return await walletProvider.signAndSendTransaction(transaction as VersionedTransaction);
           },
+          // @ts-expect-error - Type mismatch in plugin
           signTransaction: async transaction => {
-            return (await walletProvider.signTransaction(
-              transaction as VersionedTransaction,
-            )) as any;
+            return await walletProvider.signTransaction(transaction as VersionedTransaction);
           },
+          // @ts-expect-error - Type mismatch in plugin
           signAllTransactions: async transactions => {
             const signedTransactions: (VersionedTransaction | Transaction)[] = [];
             for (let i = 0; i < transactions.length; i++) {
@@ -260,7 +263,7 @@ export class MetaplexActionProvider extends ActionProvider<SvmWalletProvider> {
                 transactions[i] as VersionedTransaction,
               );
             }
-            return signedTransactions as any;
+            return signedTransactions;
           },
 
           signMessage: async message => {
@@ -284,8 +287,9 @@ export class MetaplexActionProvider extends ActionProvider<SvmWalletProvider> {
 
   /**
    * Fetch a list of assets created by a specific address using the Metaplex DAS API.
-   * @param walletProvider
-   * @param args
+   *
+   * @param walletProvider - The wallet provider to use for signing transactions
+   * @param args - The arguments for fetching the assets
    * @returns Promise<string>
    */
   @CreateAction({
@@ -307,11 +311,11 @@ export class MetaplexActionProvider extends ActionProvider<SvmWalletProvider> {
           sendTransaction: async transaction => {
             return await walletProvider.signAndSendTransaction(transaction as VersionedTransaction);
           },
+          // @ts-expect-error - Type mismatch in plugin
           signTransaction: async transaction => {
-            return (await walletProvider.signTransaction(
-              transaction as VersionedTransaction,
-            )) as any;
+            return await walletProvider.signTransaction(transaction as VersionedTransaction);
           },
+          // @ts-expect-error - Type mismatch in plugin
           signAllTransactions: async transactions => {
             const signedTransactions: (VersionedTransaction | Transaction)[] = [];
             for (let i = 0; i < transactions.length; i++) {
@@ -319,7 +323,7 @@ export class MetaplexActionProvider extends ActionProvider<SvmWalletProvider> {
                 transactions[i] as VersionedTransaction,
               );
             }
-            return signedTransactions as any;
+            return signedTransactions;
           },
           signMessage: async message => {
             return message;
@@ -342,8 +346,9 @@ export class MetaplexActionProvider extends ActionProvider<SvmWalletProvider> {
 
   /**
    * Mint an NFT using Metaplex.
-   * @param walletProvider
-   * @param args
+   *
+   * @param walletProvider - The wallet provider to use for signing transactions
+   * @param args - The arguments for minting the NFT
    * @returns Promise<string>
    */
   @CreateAction({
@@ -365,11 +370,11 @@ export class MetaplexActionProvider extends ActionProvider<SvmWalletProvider> {
           sendTransaction: async transaction => {
             return await walletProvider.signAndSendTransaction(transaction as VersionedTransaction);
           },
+          // @ts-expect-error - Type mismatch in plugin
           signTransaction: async transaction => {
-            return (await walletProvider.signTransaction(
-              transaction as VersionedTransaction,
-            )) as any;
+            return await walletProvider.signTransaction(transaction as VersionedTransaction);
           },
+          // @ts-expect-error - Type mismatch in plugin
           signAllTransactions: async transactions => {
             const signedTransactions: (VersionedTransaction | Transaction)[] = [];
             for (let i = 0; i < transactions.length; i++) {
@@ -377,7 +382,7 @@ export class MetaplexActionProvider extends ActionProvider<SvmWalletProvider> {
                 transactions[i] as VersionedTransaction,
               );
             }
-            return signedTransactions as any;
+            return signedTransactions;
           },
           signAndSendTransaction: async tx => ({
             signature: await walletProvider.signAndSendTransaction(tx),
@@ -406,8 +411,9 @@ export class MetaplexActionProvider extends ActionProvider<SvmWalletProvider> {
 
   /**
    * Search for assets using the Metaplex DAS API.
-   * @param walletProvider
-   * @param args
+   *
+   * @param walletProvider - The wallet provider to use for signing transactions
+   * @param args - The arguments for searching for assets
    * @returns Promise<string>
    */
   @CreateAction({
@@ -429,11 +435,11 @@ export class MetaplexActionProvider extends ActionProvider<SvmWalletProvider> {
           sendTransaction: async transaction => {
             return await walletProvider.signAndSendTransaction(transaction as VersionedTransaction);
           },
+          // @ts-expect-error - Type mismatch in plugin
           signTransaction: async transaction => {
-            return (await walletProvider.signTransaction(
-              transaction as VersionedTransaction,
-            )) as any;
+            return await walletProvider.signTransaction(transaction as VersionedTransaction);
           },
+          // @ts-expect-error - Type mismatch in plugin
           signAllTransactions: async transactions => {
             const signedTransactions: (VersionedTransaction | Transaction)[] = [];
             for (let i = 0; i < transactions.length; i++) {
@@ -441,7 +447,7 @@ export class MetaplexActionProvider extends ActionProvider<SvmWalletProvider> {
                 transactions[i] as VersionedTransaction,
               );
             }
-            return signedTransactions as any;
+            return signedTransactions;
           },
           signMessage: async message => {
             return message;
@@ -480,6 +486,6 @@ export class MetaplexActionProvider extends ActionProvider<SvmWalletProvider> {
    * @returns True if the network is a Solana network
    */
   supportsNetwork(network: Network): boolean {
-    return network.protocolFamily == "svm" && network.networkId === "solana-mainnet";
+    return network.protocolFamily === "svm" && network.networkId === "solana-mainnet";
   }
 }

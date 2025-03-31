@@ -20,8 +20,8 @@ jest.mock("solana-agent-kit", () => ({
       mintCollectionNFT: jest.fn().mockResolvedValue({
         signature: "mock-mint-signature",
         mint: {
-          toBase58: jest.fn().mockReturnValue("mockNFTAddress123456789")
-        }
+          toBase58: jest.fn().mockReturnValue("mockNFTAddress123456789"),
+        },
       }),
       fetchAsset: jest.fn().mockResolvedValue({
         id: "mock-asset-id",
@@ -48,23 +48,23 @@ jest.mock("solana-agent-kit", () => ({
           { id: "asset1", name: "Asset 1" },
           { id: "asset2", name: "Asset 2" },
         ],
-        total: 2
+        total: 2,
       }),
       deployCollection: jest.fn().mockResolvedValue({
         collectionAddress: {
-          toBase58: jest.fn().mockReturnValue("asdfasdfasdf")
-        }
+          toBase58: jest.fn().mockReturnValue("asdfasdfasdf"),
+        },
       }),
       deployToken: jest.fn().mockResolvedValue({
         mint: {
-          toBase58: jest.fn().mockReturnValue("mockTokenAddress123456789")
-        }
+          toBase58: jest.fn().mockReturnValue("mockTokenAddress123456789"),
+        },
       }),
       getAsset: jest.fn().mockResolvedValue({
         id: "mock-asset-id",
-        name: "Mock Asset"
-      })
-    }
+        name: "Mock Asset",
+      }),
+    },
   })),
 }));
 
